@@ -1,3 +1,4 @@
+from nis import match
 import numpy as np
 
 X = "WHATEVER"
@@ -8,15 +9,23 @@ class Calculator():
         self.deck, self.probs = list(zip(*deck_and_probs))
         
     def calculateProbs(self, combo_hands, num_iters=10):
-        dic = { "A": 0, "B": 0, "C": 0, "D": 0, "E": 0 }
-        cont = 0
-        for i in range(num_iters):
+        matches, cont = [], 0
+        for ch in combo_hands.values():
+            matches.append(0)
+            
+        for _ in range(num_iters):
             hand = set(np.random.choice(self.deck, 5, True, np.array(self.probs) / np.sum(self.probs)))
-            for ch in combo_hands:
+            isMatch = False
+            for id,ch in combo_hands.items():
                 if len(hand.intersection(ch)) == len(ch):
-                    cont += 1
-                    break
-        print(cont * 100 / num_iters, "%", dic)
+                    isMatch = True
+                    matches[id] += 1
+            if isMatch:
+                cont += 1
+
+        print("TOTAL COMBO HANDS:", cont * 100 / num_iters, "%")
+        for id,ch in combo_hands.items():
+            print(ch, ":", matches[id] * 100 / num_iters, "%")
 
 
     
